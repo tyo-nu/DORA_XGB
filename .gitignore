@@ -1,0 +1,38 @@
+# Various IDE and OS files to ignore
+.DS_Store
+*.pyc
+__pycache__
+*.swp
+.pydevproject
+.idea
+tscommand-*
+.tscache
+.coverage
+coverage.json
+
+# per-machine configuration files; contains secrets, DO NOT CHECK-IN
+secrets.env
+/secrets
+
+# per-machine local settings files; this will override default settings with local changes
+server/edd/settings/local/*
+**/local.py
+**/docker-compose.override.yml
+settings/*
+!settings/example
+# also ignore any local media/upload folders
+**/media
+**/upload
+**/uploads
+# and ignore local log directory
+**/log
+# and generated coverage reports
+**/htmlcov
+
+# ignore typescript generated files in mounted code folders
+**/main/static/dist
+typescript/modules/**/*.d.ts
+typescript/src/**/*.d.ts
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
