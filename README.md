@@ -1,6 +1,6 @@
 ### DORA_XGB: An improved enzymatic reaction feasibility classifier trained using a novel synthetic data approach
 
-Authors: Yash Chainani, Zhuofu Ni, Kevin M. Shebek, Linda J. Broadbelt, Keith E.J. Tyo
+Authors: Yash Chainani, Zhuofu Ni, Kevin M. Shebek, Linda J. Broadbelt, and Keith E.J. Tyo
 
 This public repository holds the supervised learning reaction feasibility models, DORA_XGB. For examples on how to use our models, see `scripts/run_example.py` or  `notebooks/DORA_XGB_examples.ipynb`.
 
