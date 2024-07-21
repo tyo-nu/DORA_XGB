@@ -17,7 +17,7 @@ After creating a new python 3.8 virtual environment, or using an existing one, s
 pip install -e.
 ```
 
-## Running DORA_XGB with docker:
+## Running DORA-XGB with docker:
 We have also created a docker container for users to deploy our models within a containerized environment. To begin, run the following in the same directory as the dockerfile to build a docker image with the name `dora_xgb`:  
 
 `docker build -t dora_xgb .`
