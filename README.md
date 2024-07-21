@@ -1,20 +1,24 @@
-### DORA_XGB: An improved enzymatic reaction feasibility classifier trained using a novel synthetic data approach
+# DORA-XGB: An improved enzymatic reaction feasibility classifier trained using a novel synthetic data approach
 
 Authors: Yash Chainani, Zhuofu Ni, Kevin M. Shebek, Linda J. Broadbelt, and Keith E.J. Tyo
 
 This public repository holds the supervised learning reaction feasibility models, DORA_XGB. For examples on how to use our models, see `scripts/run_example.py` or  `notebooks/DORA_XGB_examples.ipynb`.
 
-#### Environment setup and installation:
-To use DORA_XGB models, begin by creating a python 3.8 environment or use an existing python 3.8 environment:  
+## Environment setup and installation:
+To use DORA-XGB models, begin by creating a python 3.8 environment or use an existing python 3.8 environment:  
 
-`conda create -n DORA_XGB_env python=3.8`
+```
+conda create -n DORA_XGB_env python=3.8
+```
 
-After creating a new python 3.8 virtual environment, or using an existing one, simply pip install our DORA_XGB models package:  
+After creating a new python 3.8 virtual environment, or using an existing one, simply pip install our DORA-XGB models package:  
 
-`pip install -e.`
+```
+pip install -e.
+```
 
 #### Running DORA_XGB with docker:
-We have also created a docker container for users to deploy our models within a containerized environment. To begin, run the following command in the same directory as the dockerfile to build a docker image with the name `dora_xgb`:  
+We have also created a docker container for users to deploy our models within a containerized environment. To begin, run the following in the same directory as the dockerfile to build a docker image with the name `dora_xgb`:  
 
 `docker build -t dora_xgb .`
 
