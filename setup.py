@@ -8,7 +8,7 @@ def parse_requirements(filename):
 setup(
     name='DORA_XGB',
 
-    version='1.01',
+    version='1.2',
 
     description = "Gradient-booseted classifiers to predict the feasibility of enzymatic reactions",
                 
