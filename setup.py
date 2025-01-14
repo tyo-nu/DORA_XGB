@@ -33,8 +33,6 @@ setup(
 
 classifiers=[
         "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research/Development",
-        "Intended Audience :: Scientific Engineering",
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.8",
