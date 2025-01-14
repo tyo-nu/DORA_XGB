@@ -1,6 +1,5 @@
 networkx>=2.2
 numpy
-matplotlib
 mhfp==1.9.6
 mordred==1.2.0
 pandas>=1.5.0,<2.0.0
