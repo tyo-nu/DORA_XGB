@@ -1,6 +1,6 @@
 networkx>=2.2
 numpy
-mhfp==1.9.6
+mhfp
 mordred==1.2.0
 pandas>=1.5.0,<2.0.0
 rdkit>=2023.9.1
