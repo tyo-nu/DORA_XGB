@@ -35,7 +35,6 @@ classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research/Development",
         "Intended Audience :: Scientific Engineering",
-        "Intended Audience :: Application",
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.8",
