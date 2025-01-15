@@ -3,7 +3,7 @@ Author: Yash Chainani
 
 This is a custom-designed package built atop of several rdkit functionalities
 The goal of this package is to provide various fingerprinting methods to featurize both compounds and reactions
-Compounds can be featurized by converting their SMILES into either hashed fingerprints (ecfp4, atom-pair, MAP4)
+Compounds can be featurized by converting their SMILES into either hashed fingerprints (ecfp4, atom-pair)
 or descriptor based fingerprints (Mordred and MACCS)
 Reactions can be featurized by concatenating the fingerprints of constituent compounds together into a single vector
 """
@@ -23,10 +23,6 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, Union, Optional
 
-# MAP4 fingerprints were installed from https://github.com/reymond-group/map4
-# There is a nice blog post on using them from https://iwatobipen.wordpress.com/
-from map4 import MAP4Calculator
-
 # MHFP fingerprints were installed from https://github.com/reymond-group/mhfp
 # There is also a nice blog post on using them from https://xinhaoli74.github.io/posts/2020/05/TMAP/
 # Journal publication with these fingerprints: https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0321-8
@@ -36,7 +32,6 @@ from mhfp.encoder import MHFPEncoder
 from rdkit import RDLogger
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)
-
 
 class compound:
     """
@@ -178,27 +173,6 @@ class compound:
         return None
 
     # checked and tested
-    def _smiles_2_MAP4(self, is_folded: bool, dim: int) -> Union[np.ndarray, None]:
-        """
-        Generate MAP4 fingerprints for a compound after canonicalizing smiles and removing stereochemistry
-        :param is_folded: False as default (resolve TMAP attribute errors) but set to True for fixed dimensions
-        :param dim: Output dimensions of fingerprint
-        :return: MAP4 fingerprint
-        """
-        try:
-            canon_smi_wo_stereo = self.remove_stereo()
-            mol = Chem.MolFromSmiles(canon_smi_wo_stereo)
-        except Exception as E:
-            return None
-
-        if mol:
-            MAP4_folded = MAP4Calculator(dimensions=dim, is_folded=is_folded)
-            fp = MAP4_folded.calculate(mol)
-            return np.array(fp)
-
-        return None
-
-    # checked and tested
     def _smiles_2_MHFP(self, radius:int) -> Union[np.ndarray,None]:
         mhfp_encoder = MHFPEncoder()
 
@@ -238,16 +212,12 @@ class compound:
             reactant_fp = self._smiles_2_modred()
             return reactant_fp
 
-        if fp_type == "MAP4":
-            reactant_fp = self._smiles_2_MAP4(is_folded = is_folded, dim = dim)
-            return reactant_fp
-
         if fp_type == "MHFP4": # the default radius here is actually 6
             reactant_fp = self._smiles_2_MHFP(radius = radius)
             return reactant_fp
 
         else:
-            raise ValueError("Please enter a valid fingerprinting method, such as: morgan/ecfp4, MACCS, atom_pair, modred, MAP4, or MHFP4")
+            raise ValueError("Please enter a valid fingerprinting method, such as: morgan/ecfp4, MACCS, atom_pair, modred, or MHFP4")
 
 class reaction:
     """
@@ -542,9 +512,6 @@ class reaction:
             if type == "mordred":
                 reactant_fp = reactant_object._smiles_2_modred()
 
-            if type == "MAP4":
-                reactant_fp = reactant_object._smiles_2_MAP4(is_folded=True, dim=2048)
-
             if type == "MHFP4":
                 reactant_fp = reactant_object._smiles_2_MHFP(radius = 2)
 
@@ -577,9 +544,6 @@ class reaction:
 
             if type == "mordred":
                 product_fp = product_object._smiles_2_modred()
-
-            if type == "MAP4":
-                product_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
 
             if type == "MHFP4":
                 product_fp = product_object._smiles_2_MHFP(radius=2)
@@ -617,11 +581,11 @@ class reaction:
                                cofactor_positioning: str = None,
                                all_cofactors_wo_stereo: set = None) -> np.ndarray:
         """
-        :param fp_type: Type of reaction fingerprint to generate ( 'morgan/ecfp4', 'MACCS', 'mordred','atom_pair', 'MAP4', 'MHFP4')
+        :param fp_type: Type of reaction fingerprint to generate ( 'morgan/ecfp4', 'MACCS', 'mordred','atom_pair', 'MHFP4')
         :param radius: Radius of fragmentation if using morgan or ecfp4
         :param nBits: Number of bits if using morgan or ecfp4
-        :param is_folded: If fingerprint should be folded or not when using MAP4
-        :param dim: Number of bits if using MAP4
+        :param is_folded: If fingerprint should be folded or not when using MAP4 (MAP4 now removed)
+        :param dim: Number of bits if using MAP4 (MAP4 now removed)
         :param max_species: Maximum number of species on each side (pad zeroes if less species than max are present)
         :param cofactor_positioning: Arrangement of cofactors: in increasing MW, decreasing MW, or as per reaction rule
         :param all_cofactors_wo_stereo: set of all cofactors without stereochemistry
@@ -871,9 +835,6 @@ class reaction:
 
             if fp_type == "mordred":
                 fp_length = 1613
-
-            if fp_type == "MAP4":
-                fp_length = 2048
 
             if fp_type == "MHFP4":
                 fp_length = 2048

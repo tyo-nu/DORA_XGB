@@ -9,7 +9,6 @@ from DORA_XGB.featurizations import featurizations
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors, DataStructs, MACCSkeys
-from map4 import MAP4Calculator
 from sklearn.preprocessing import StandardScaler
 from mhfp.encoder import MHFPEncoder
 import pandas as pd
@@ -52,27 +51,27 @@ def test_if_MACCS_descriptors_working():
     # MACCS keys are a set of 166 bits, but the RDKit implementation adds an extra zero bit at the beginning making the length 167
     assert len(benzene_fp) == 167, "The length of the MACCS fingerprint should be 167 bits."
 
-def test_if_MAP4_descriptors_working():
-    # SMILES for water and ethanol
-    smiles_water = "O"
-    smiles_ethanol = "CCO"
-
-    # Generate the MAP4 fingerprint
-    MAP4_f = MAP4Calculator(dimensions=2048, is_folded=True) #folded
-
-    fp_water = MAP4_f.calculate(Chem.MolFromSmiles(smiles_water))
-    fp_ethanol = MAP4_f.calculate(Chem.MolFromSmiles(smiles_ethanol))
-    fp_water_duplicate = MAP4_f.calculate(Chem.MolFromSmiles(smiles_water))
-
-    # Assert that the same molecule gives the same fingerprint
-    assert np.array_equal(fp_water,fp_water_duplicate)
-
-    # Assert that different molecules give different fingerprints
-    assert (np.array_equal(fp_water,fp_ethanol) == False)
-
-    # Optionally, you can add more checks, e.g., the length of the fingerprint, if it's consistent with your settings.
-    expected_length = 2048
-    assert len(fp_water) == expected_length
+# def test_if_MAP4_descriptors_working():
+#     # SMILES for water and ethanol
+#     smiles_water = "O"
+#     smiles_ethanol = "CCO"
+#
+#     # Generate the MAP4 fingerprint
+#     MAP4_f = MAP4Calculator(dimensions=2048, is_folded=True) #folded
+#
+#     fp_water = MAP4_f.calculate(Chem.MolFromSmiles(smiles_water))
+#     fp_ethanol = MAP4_f.calculate(Chem.MolFromSmiles(smiles_ethanol))
+#     fp_water_duplicate = MAP4_f.calculate(Chem.MolFromSmiles(smiles_water))
+#
+#     # Assert that the same molecule gives the same fingerprint
+#     assert np.array_equal(fp_water,fp_water_duplicate)
+#
+#     # Assert that different molecules give different fingerprints
+#     assert (np.array_equal(fp_water,fp_ethanol) == False)
+#
+#     # Optionally, you can add more checks, e.g., the length of the fingerprint, if it's consistent with your settings.
+#     expected_length = 2048
+#     assert len(fp_water) == expected_length
 
 ### Begin testing our custom featurizations package
 def test_smiles_canonicalization():
@@ -300,93 +299,93 @@ def test_smiles_2_atompair_fp_for_non_canon_smi_w_stereo( ):
     # Check if MACCS fingerprints from both compounds (canon and non-canon SMILES) are equal
     assert np.array_equal(fp_1,fp_2)
 
-def test_smiles_2_MAP4_for_canonical_smiles():
-    """
-    Tests for the smiles_2_MAP4_fp method in the compound class of the featurization module
-    Want to ensure that the canonical and non-canonical smiles string of the same compound give the same fingerprint
-    :param smi: input smiles string (non-canonical) for compound
-    :return:
-    """
-    smi = "CCO"
-    is_folded = True
-    dim = 2048
-    cpd = featurizations.compound(smi)
-    fp_from_featurizations_module = cpd._smiles_2_MAP4(is_folded=is_folded, dim=dim)
+# def test_smiles_2_MAP4_for_canonical_smiles():
+#     """
+#     Tests for the smiles_2_MAP4_fp method in the compound class of the featurization module
+#     Want to ensure that the canonical and non-canonical smiles string of the same compound give the same fingerprint
+#     :param smi: input smiles string (non-canonical) for compound
+#     :return:
+#     """
+#     smi = "CCO"
+#     is_folded = True
+#     dim = 2048
+#     cpd = featurizations.compound(smi)
+#     fp_from_featurizations_module = cpd._smiles_2_MAP4(is_folded=is_folded, dim=dim)
+#
+#     # Check if MAP4 fingerprints are numpy arrays
+#     assert type(fp_from_featurizations_module) is np.ndarray
+#
+#     # Check if MAP4 fingerprints are of correct lengths
+#     assert len(fp_from_featurizations_module) == dim
+#
+#     # Generate fingerprint directly
+#     mol = Chem.MolFromSmiles("CCO")
+#     MAP4_folded = MAP4Calculator(dimensions=dim, is_folded=is_folded)
+#     direct_fp = MAP4_folded.calculate(mol)
+#
+#     # Check if MAP4 fingerprints from both compounds (canon and non-canon SMILES) are equal
+#     assert np.array_equal(fp_from_featurizations_module, direct_fp)
 
-    # Check if MAP4 fingerprints are numpy arrays
-    assert type(fp_from_featurizations_module) is np.ndarray
+# def test_smiles_2_MAP4_for_non_canon_smiles():
+#     """
+#     Tests for the smiles_2_MAP4_fp method in the compound class of the featurization module
+#     Want to ensure that the canonical and non-canonical smiles string of the same compound give the same fingerprint
+#     :param smi_1: input smiles string (non-canonical) for compound
+#     :param smi_2: input smiles string (canonical) for compound
+#     :return:
+#     """
+#     smi_1 = "OCC"
+#     smi_2 = "CCO"
+#     is_folded = True
+#     dim = 2048
+#     cpd_1 = featurizations.compound(smi_1)
+#     cpd_2 = featurizations.compound(smi_2)
+#     fp_1 = cpd_1._smiles_2_MAP4(is_folded=is_folded, dim=dim)
+#     fp_2 = cpd_2._smiles_2_MAP4(is_folded=is_folded, dim=dim)
+#
+#     # Check if MAP4 fingerprints are numpy arrays
+#     assert type(fp_1) is np.ndarray
+#     assert type(fp_2) is np.ndarray
+#
+#     # Check if MAP4 fingerprints are of correct lengths
+#     assert len(fp_1) == dim
+#     assert len(fp_2) == dim
+#
+#     # Check if MAP4 fingerprints from both compounds (canon and non-canon SMILES) are equal
+#     assert np.array_equal(fp_1, fp_2)
 
-    # Check if MAP4 fingerprints are of correct lengths
-    assert len(fp_from_featurizations_module) == dim
-
-    # Generate fingerprint directly
-    mol = Chem.MolFromSmiles("CCO")
-    MAP4_folded = MAP4Calculator(dimensions=dim, is_folded=is_folded)
-    direct_fp = MAP4_folded.calculate(mol)
-
-    # Check if MAP4 fingerprints from both compounds (canon and non-canon SMILES) are equal
-    assert np.array_equal(fp_from_featurizations_module, direct_fp)
-
-def test_smiles_2_MAP4_for_non_canon_smiles():
-    """
-    Tests for the smiles_2_MAP4_fp method in the compound class of the featurization module
-    Want to ensure that the canonical and non-canonical smiles string of the same compound give the same fingerprint
-    :param smi_1: input smiles string (non-canonical) for compound
-    :param smi_2: input smiles string (canonical) for compound
-    :return:
-    """
-    smi_1 = "OCC"
-    smi_2 = "CCO"
-    is_folded = True
-    dim = 2048
-    cpd_1 = featurizations.compound(smi_1)
-    cpd_2 = featurizations.compound(smi_2)
-    fp_1 = cpd_1._smiles_2_MAP4(is_folded=is_folded, dim=dim)
-    fp_2 = cpd_2._smiles_2_MAP4(is_folded=is_folded, dim=dim)
-
-    # Check if MAP4 fingerprints are numpy arrays
-    assert type(fp_1) is np.ndarray
-    assert type(fp_2) is np.ndarray
-
-    # Check if MAP4 fingerprints are of correct lengths
-    assert len(fp_1) == dim
-    assert len(fp_2) == dim
-
-    # Check if MAP4 fingerprints from both compounds (canon and non-canon SMILES) are equal
-    assert np.array_equal(fp_1, fp_2)
-
-def test_smiles_2_MAP4_for_non_canonical_smi_w_stereo():
-    """
-    Tests for the smiles_2_atompair_fp method in the compound class of the featurization module
-    Want to ensure that the canonical and non-canonical, stereochemical smiles of compound give the same fingerprint
-    :param smi_1: input smiles string (non-canonical) for compound
-    :param smi_2: input smiles string (canonical) for compound
-    :param radius: radius of fragmentation
-    :param nBits: output dimensions of fingerprint
-    :return:
-    """
-    smi_1 = "C[C@](F)(Cl)N"
-    smi_2 = "CC(N)(F)Cl"
-    is_folded = True
-    dim = 2048
-    cpd_1 = featurizations.compound(smi_1)
-    cpd_2 = featurizations.compound(smi_2)
-    fp_1 = cpd_1._smiles_2_MAP4(is_folded=is_folded, dim=dim)
-    fp_2 = cpd_2._smiles_2_MAP4(is_folded=is_folded, dim=dim)
-
-    # check if MACCS fingerprints generated using the custom featurizations module are in a numpy array
-    assert type(fp_1) is np.ndarray
-    assert type(fp_2) is np.ndarray
-
-    # Check if MACCS fingerprints are of the right length
-    assert len(fp_1) == dim
-    assert len(fp_2) == dim
-
-    fp_1 = np.nan_to_num(fp_1, copy=True)
-    fp_2 = np.nan_to_num(fp_2, copy=True)
-
-    # Check if MAP4 fingerprints from both compounds (canon and non-canon SMILES) are equal
-    assert np.array_equal(fp_1, fp_2)
+# def test_smiles_2_MAP4_for_non_canonical_smi_w_stereo():
+#     """
+#     Tests for the smiles_2_atompair_fp method in the compound class of the featurization module
+#     Want to ensure that the canonical and non-canonical, stereochemical smiles of compound give the same fingerprint
+#     :param smi_1: input smiles string (non-canonical) for compound
+#     :param smi_2: input smiles string (canonical) for compound
+#     :param radius: radius of fragmentation
+#     :param nBits: output dimensions of fingerprint
+#     :return:
+#     """
+#     smi_1 = "C[C@](F)(Cl)N"
+#     smi_2 = "CC(N)(F)Cl"
+#     is_folded = True
+#     dim = 2048
+#     cpd_1 = featurizations.compound(smi_1)
+#     cpd_2 = featurizations.compound(smi_2)
+#     fp_1 = cpd_1._smiles_2_MAP4(is_folded=is_folded, dim=dim)
+#     fp_2 = cpd_2._smiles_2_MAP4(is_folded=is_folded, dim=dim)
+#
+#     # check if MACCS fingerprints generated using the custom featurizations module are in a numpy array
+#     assert type(fp_1) is np.ndarray
+#     assert type(fp_2) is np.ndarray
+#
+#     # Check if MACCS fingerprints are of the right length
+#     assert len(fp_1) == dim
+#     assert len(fp_2) == dim
+#
+#     fp_1 = np.nan_to_num(fp_1, copy=True)
+#     fp_2 = np.nan_to_num(fp_2, copy=True)
+#
+#     # Check if MAP4 fingerprints from both compounds (canon and non-canon SMILES) are equal
+#     assert np.array_equal(fp_1, fp_2)
 
 def test_smiles_2_mhfp_for_canonical_smiles():
     smi = "CCO"
@@ -412,7 +411,7 @@ def test_all_fp_methods_and_combined_fp_function():
     ecfp4_fp_a = cpd._smiles_2_morganfp(radius = 2, nBits = 2048)
     MACCS_fp_a = cpd._smiles_2_MACCS()
     atompair_fp_a = cpd._smiles_2_atompair(nBits = 2048)
-    MAP4_fp_a = cpd._smiles_2_MAP4(is_folded = True, dim = 2048)
+    # MAP4_fp_a = cpd._smiles_2_MAP4(is_folded = True, dim = 2048)
     mhfp_a = cpd._smiles_2_MHFP(radius = 2)
 
     def are_arrays_distinct(arrays):
@@ -427,21 +426,21 @@ def test_all_fp_methods_and_combined_fp_function():
     assert are_arrays_distinct([ecfp4_fp_a,
                                 MACCS_fp_a,
                                 atompair_fp_a,
-                                MAP4_fp_a,
+                                #MAP4_fp_a,
                                 mhfp_a])
 
     # next, we calculate fingerprints with the combined fingerprinting methods
     ecpf4_fp_b = cpd.smiles_2_fp(fp_type = 'ecfp4')
     MACCS_fp_b = cpd.smiles_2_fp(fp_type = 'MACCS')
     atompair_fp_b = cpd.smiles_2_fp(fp_type = 'atom_pair')
-    MAP4_fp_b = cpd.smiles_2_fp(fp_type = 'MAP4')
+    #MAP4_fp_b = cpd.smiles_2_fp(fp_type = 'MAP4')
     mhfp_b = cpd.smiles_2_fp(fp_type = 'MHFP4')
 
     # again check if fingerprints are unique
     assert are_arrays_distinct([ecpf4_fp_b,
                                 MACCS_fp_b,
                                 atompair_fp_b,
-                                MAP4_fp_b,
+                                #MAP4_fp_b,
                                 mhfp_b])
 
     # finally, check that fingerprints calculated either through the individual function
@@ -449,7 +448,7 @@ def test_all_fp_methods_and_combined_fp_function():
     assert np.array_equal(ecfp4_fp_a,ecpf4_fp_b)
     assert np.array_equal(MACCS_fp_a,MACCS_fp_b)
     assert np.array_equal(atompair_fp_a,atompair_fp_b)
-    assert np.array_equal(MAP4_fp_a,MAP4_fp_b)
+    #assert np.array_equal(MAP4_fp_a,MAP4_fp_b)
     assert np.array_equal(mhfp_a,mhfp_b)
 
 # --------- Tests with the reaction class of our custom featurizations package  ---------
@@ -919,66 +918,66 @@ def test_rxn_2_fp_an_AdH_rxn_w_MACCS_max_species_4():
     # finally, we check that the reaction fingerprint generated by our featurizations package equals the manual one
     assert np.array_equal(rxn_fp,manual_rxn_fp)
 
-def test_rxn_2_fp_an_AdH_rxn_w_MAP4_max_species_2():
-    rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
-    rxn_object = featurizations.reaction(rxn_str)
+# def test_rxn_2_fp_an_AdH_rxn_w_MAP4_max_species_2():
+#     rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
+#     rxn_object = featurizations.reaction(rxn_str)
+#
+#     fp_type = "MAP4"
+#     max_species = 2
+#
+#     # first, we automatically generate a reaction fingerprint using our featurizations package's rxn_2_fp method
+#     rxn_fp = rxn_object.rxn_2_fp(type = fp_type, max_species = max_species)
+#
+#     # then, we manually create the same reaction fingerprint and check if our rxn_2_fp method got it right
+#     substrate_fp = featurizations.compound("OCC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
+#     lhs_cofactor_fp = featurizations.compound("NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1").smiles_2_fp(fp_type = fp_type)
+#     product_fp = featurizations.compound("O=CC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
+#     rhs_cofactor_fp = featurizations.compound("NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1").smiles_2_fp(fp_type = fp_type)
+#     assert type(substrate_fp) == np.ndarray
+#     assert type(lhs_cofactor_fp) == np.ndarray
+#     assert type(product_fp) == np.ndarray
+#     assert type(rhs_cofactor_fp) == np.ndarray
+#
+#     assert len(substrate_fp) == 2048
+#     assert len(lhs_cofactor_fp) == 2048
+#     assert len(product_fp) == 2048
+#     assert len(rhs_cofactor_fp) == 2048
+#
+#     manual_rxn_fp = np.concatenate((substrate_fp,lhs_cofactor_fp,product_fp,rhs_cofactor_fp),axis=None)
+#
+#     # finally, we check that the reaction fingerprint generated by our featurizations package equals the manual one
+#     assert np.array_equal(rxn_fp,manual_rxn_fp)
 
-    fp_type = "MAP4"
-    max_species = 2
-
-    # first, we automatically generate a reaction fingerprint using our featurizations package's rxn_2_fp method
-    rxn_fp = rxn_object.rxn_2_fp(type = fp_type, max_species = max_species)
-
-    # then, we manually create the same reaction fingerprint and check if our rxn_2_fp method got it right
-    substrate_fp = featurizations.compound("OCC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
-    lhs_cofactor_fp = featurizations.compound("NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1").smiles_2_fp(fp_type = fp_type)
-    product_fp = featurizations.compound("O=CC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
-    rhs_cofactor_fp = featurizations.compound("NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1").smiles_2_fp(fp_type = fp_type)
-    assert type(substrate_fp) == np.ndarray
-    assert type(lhs_cofactor_fp) == np.ndarray
-    assert type(product_fp) == np.ndarray
-    assert type(rhs_cofactor_fp) == np.ndarray
-
-    assert len(substrate_fp) == 2048
-    assert len(lhs_cofactor_fp) == 2048
-    assert len(product_fp) == 2048
-    assert len(rhs_cofactor_fp) == 2048
-
-    manual_rxn_fp = np.concatenate((substrate_fp,lhs_cofactor_fp,product_fp,rhs_cofactor_fp),axis=None)
-
-    # finally, we check that the reaction fingerprint generated by our featurizations package equals the manual one
-    assert np.array_equal(rxn_fp,manual_rxn_fp)
-
-def test_rxn_2_fp_an_AdH_rxn_w_MAP4_max_species_4():
-    rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
-    rxn_object = featurizations.reaction(rxn_str)
-
-    fp_type = "MAP4"
-    max_species = 4
-
-    # first, we automatically generate a reaction fingerprint using our featurizations package's rxn_2_fp method
-    rxn_fp = rxn_object.rxn_2_fp(type = fp_type, max_species = max_species)
-
-    # then, we manually create the same reaction fingerprint and check if our rxn_2_fp method got it right
-    substrate_fp = featurizations.compound("OCC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
-    lhs_cofactor_fp = featurizations.compound("NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1").smiles_2_fp(fp_type = fp_type)
-    product_fp = featurizations.compound("O=CC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
-    rhs_cofactor_fp = featurizations.compound("NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1").smiles_2_fp(fp_type = fp_type)
-    assert type(substrate_fp) == np.ndarray
-    assert type(lhs_cofactor_fp) == np.ndarray
-    assert type(product_fp) == np.ndarray
-    assert type(rhs_cofactor_fp) == np.ndarray
-
-    assert len(substrate_fp) == 2048
-    assert len(lhs_cofactor_fp) == 2048
-    assert len(product_fp) == 2048
-    assert len(rhs_cofactor_fp) == 2048
-
-    manual_rxn_fp = np.concatenate((substrate_fp,lhs_cofactor_fp,np.zeros(2048),np.zeros(2048),
-                                    product_fp,rhs_cofactor_fp,np.zeros(2048),np.zeros(2048)),axis=None)
-
-    # finally, we check that the reaction fingerprint generated by our featurizations package equals the manual one
-    assert np.array_equal(rxn_fp,manual_rxn_fp)
+# def test_rxn_2_fp_an_AdH_rxn_w_MAP4_max_species_4():
+#     rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
+#     rxn_object = featurizations.reaction(rxn_str)
+#
+#     fp_type = "MAP4"
+#     max_species = 4
+#
+#     # first, we automatically generate a reaction fingerprint using our featurizations package's rxn_2_fp method
+#     rxn_fp = rxn_object.rxn_2_fp(type = fp_type, max_species = max_species)
+#
+#     # then, we manually create the same reaction fingerprint and check if our rxn_2_fp method got it right
+#     substrate_fp = featurizations.compound("OCC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
+#     lhs_cofactor_fp = featurizations.compound("NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1").smiles_2_fp(fp_type = fp_type)
+#     product_fp = featurizations.compound("O=CC(O)C(O)C(O)C(O)CO").smiles_2_fp(fp_type = fp_type)
+#     rhs_cofactor_fp = featurizations.compound("NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1").smiles_2_fp(fp_type = fp_type)
+#     assert type(substrate_fp) == np.ndarray
+#     assert type(lhs_cofactor_fp) == np.ndarray
+#     assert type(product_fp) == np.ndarray
+#     assert type(rhs_cofactor_fp) == np.ndarray
+#
+#     assert len(substrate_fp) == 2048
+#     assert len(lhs_cofactor_fp) == 2048
+#     assert len(product_fp) == 2048
+#     assert len(rhs_cofactor_fp) == 2048
+#
+#     manual_rxn_fp = np.concatenate((substrate_fp,lhs_cofactor_fp,np.zeros(2048),np.zeros(2048),
+#                                     product_fp,rhs_cofactor_fp,np.zeros(2048),np.zeros(2048)),axis=None)
+#
+#     # finally, we check that the reaction fingerprint generated by our featurizations package equals the manual one
+#     assert np.array_equal(rxn_fp,manual_rxn_fp)
 
 def test_rxn_2_fp_an_AdH_rxn_w_MHFP4_max_species_2():
     rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
@@ -1042,32 +1041,32 @@ def test_rxn_2_fp_an_AdH_rxn_w_MHFP4_max_species_4():
     assert np.array_equal(rxn_fp,manual_rxn_fp)
 
 # finally, we check if all the reaction fingerprinting methods are generating unique fingerprints
-def test_if_all_rxn_fingerprinting_methods_are_unique():
-    rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
-    rxn_object = featurizations.reaction(rxn_str)
-
-    # first, we automatically generate a reaction fingerprint using our featurizations package's rxn_2_fp method
-    ecfp4_fp = rxn_object.rxn_2_fp(type="ecfp4", max_species=2)
-    atompair_fp = rxn_object.rxn_2_fp(type="atom_pair",max_species=2)
-    MACCS_fp = rxn_object.rxn_2_fp(type="MACCS",max_species=2)
-    MAP4_fp = rxn_object.rxn_2_fp(type="MAP4",max_species=2)
-    MHFP4_fp = rxn_object.rxn_2_fp(type="MHFP4",max_species=2)
-
-    def are_arrays_distinct(arrays):
-        n = len(arrays)
-        for i in range(n):
-            for j in range(i + 1, n):
-                if np.array_equal(arrays[i], arrays[j]):
-                    return False
-        return True
-
-    # now check if all of these arrays are unique
-    # now check if fingerprints are unique
-    assert are_arrays_distinct([ecfp4_fp,
-                                atompair_fp,
-                                MACCS_fp,
-                                MAP4_fp,
-                                MHFP4_fp])
+# def test_if_all_rxn_fingerprinting_methods_are_unique():
+#     rxn_str = "OCC(O)C(O)C(O)C(O)CO + NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1 = O=CC(O)C(O)C(O)C(O)CO + NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
+#     rxn_object = featurizations.reaction(rxn_str)
+#
+#     # first, we automatically generate a reaction fingerprint using our featurizations package's rxn_2_fp method
+#     ecfp4_fp = rxn_object.rxn_2_fp(type="ecfp4", max_species=2)
+#     atompair_fp = rxn_object.rxn_2_fp(type="atom_pair",max_species=2)
+#     MACCS_fp = rxn_object.rxn_2_fp(type="MACCS",max_species=2)
+#     MAP4_fp = rxn_object.rxn_2_fp(type="MAP4",max_species=2)
+#     MHFP4_fp = rxn_object.rxn_2_fp(type="MHFP4",max_species=2)
+#
+#     def are_arrays_distinct(arrays):
+#         n = len(arrays)
+#         for i in range(n):
+#             for j in range(i + 1, n):
+#                 if np.array_equal(arrays[i], arrays[j]):
+#                     return False
+#         return True
+#
+#     # now check if all of these arrays are unique
+#     # now check if fingerprints are unique
+#     assert are_arrays_distinct([ecfp4_fp,
+#                                 atompair_fp,
+#                                 MACCS_fp,
+#                                 MAP4_fp,
+#                                 MHFP4_fp])
 
 # --------- Tests to create reaction fingerprints with ascending MWs on an alcohol dehydrogenase reaction ---------
 
@@ -1510,178 +1509,178 @@ def test_rxn_2_atom_pair_with_padding_of_two():
     assert np.array_equal(reaction_fp, manual_rxn_fp_without_padding)
 
 # Test featurizing an alcohol dehydrogenase reaction to MAP4 fingerprints both with and without padding
-def test_rxn_2_MAP4_without_padding():
-    # first, use the featurizations module to generate a MACCS reaction fingerprint
-    reaction_object = featurizations.reaction(AdH_rxn_str)
-    reaction_fp = reaction_object.rxn_2_fp_w_positioning(
-        fp_type="MAP4",
-        radius=2,
-        nBits=2048,
-        is_folded=True,
-        dim=2048,
-        max_species=2,  # since we are testing for a padding of two
-        cofactor_positioning="by_ascending_MW",
-        all_cofactors_wo_stereo=all_cofactors_wo_stereo,
-    )
+# def test_rxn_2_MAP4_without_padding():
+#     # first, use the featurizations module to generate a MACCS reaction fingerprint
+#     reaction_object = featurizations.reaction(AdH_rxn_str)
+#     reaction_fp = reaction_object.rxn_2_fp_w_positioning(
+#         fp_type="MAP4",
+#         radius=2,
+#         nBits=2048,
+#         is_folded=True,
+#         dim=2048,
+#         max_species=2,  # since we are testing for a padding of two
+#         cofactor_positioning="by_ascending_MW",
+#         all_cofactors_wo_stereo=all_cofactors_wo_stereo,
+#     )
+#
+#     # next, manually generate a MAP4 reaction fingerprint
+#     substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
+#     substrate_object = featurizations.compound(substrate_smiles)
+#     substrate_modred_fp = substrate_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     substrate_modred_fp = np.nan_to_num(
+#         substrate_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     lhs_cof_smiles = "NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1"
+#     lhs_cof_object = featurizations.compound(lhs_cof_smiles)
+#     lhs_cof_modred_fp = lhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     lhs_cof_modred_fp = np.nan_to_num(lhs_cof_modred_fp, copy=True)
+#
+#     product_smiles = "O=CC(O)C(O)C(O)C(O)CO"
+#     product_object = featurizations.compound(product_smiles)
+#     product_modred_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     product_modred_fp = np.nan_to_num(product_modred_fp, copy=True)
+#
+#     rhs_cof_smiles = "NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
+#     rhs_cof_object = featurizations.compound(rhs_cof_smiles)
+#     rhs_cof_modred_fp = rhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     rhs_cof_modred_fp = np.nan_to_num(rhs_cof_modred_fp, copy=True)
+#
+#     # All fingerprints should always be assembled in the form of "substrate + cofactor = product + cofactor"
+#     manual_rxn_fp_without_padding = np.concatenate(
+#         (substrate_modred_fp, lhs_cof_modred_fp, product_modred_fp, rhs_cof_modred_fp)
+#     )
+#
+#     # another way of checking that both arrays are truly equal could be to use the np.array_equal() function
+#     assert np.array_equal(reaction_fp, manual_rxn_fp_without_padding)
 
-    # next, manually generate a MAP4 reaction fingerprint
-    substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
-    substrate_object = featurizations.compound(substrate_smiles)
-    substrate_modred_fp = substrate_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    substrate_modred_fp = np.nan_to_num(
-        substrate_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
+# def test_rxn_2_MAP4_with_padding_of_one():
+#     # first, use the featurizations module to generate a MACCS reaction fingerprint
+#     reaction_object = featurizations.reaction(AdH_rxn_str)
+#     reaction_fp = reaction_object.rxn_2_fp_w_positioning(
+#         fp_type="MAP4",
+#         radius=2,
+#         nBits=2048,
+#         is_folded=True,
+#         dim=2048,
+#         max_species=3,  # since we are testing for a padding of two
+#         cofactor_positioning="by_ascending_MW",
+#         all_cofactors_wo_stereo=all_cofactors_wo_stereo)
+#
+#     # next, manually generate a modred reaction fingerprint
+#     substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
+#     substrate_object = featurizations.compound(substrate_smiles)
+#     substrate_modred_fp = substrate_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     substrate_modred_fp = np.nan_to_num(
+#         substrate_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     lhs_cof_smiles = "NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1"
+#     lhs_cof_object = featurizations.compound(lhs_cof_smiles)
+#     lhs_cof_modred_fp = lhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     lhs_cof_modred_fp = np.nan_to_num(
+#         lhs_cof_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     product_smiles = "O=CC(O)C(O)C(O)C(O)CO"
+#     product_object = featurizations.compound(product_smiles)
+#     product_modred_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     product_modred_fp = np.nan_to_num(
+#         product_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     rhs_cof_smiles = "NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
+#     rhs_cof_object = featurizations.compound(rhs_cof_smiles)
+#     rhs_cof_modred_fp = rhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     rhs_cof_modred_fp = np.nan_to_num(
+#         rhs_cof_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     # All fingerprints should be in the form of "substrate + cofactor = product + cofactor"
+#     manual_rxn_fp_with_padding = np.concatenate(
+#         (
+#             substrate_modred_fp,
+#             lhs_cof_modred_fp,
+#             np.zeros(len(substrate_modred_fp)),
+#             product_modred_fp,
+#             rhs_cof_modred_fp,
+#             np.zeros(len(product_modred_fp)),
+#         )
+#     )
+#
+#     # finally, check if both methods actually yield the same fingerprint
+#     for i in range(0, len(reaction_fp)):
+#         element_frm_rxn_fp = int(reaction_fp[i])
+#         element_frm_manually_constructed_fp = int(manual_rxn_fp_with_padding[i])
+#         assert element_frm_rxn_fp == element_frm_manually_constructed_fp
+#
+#     # another way of checking that both arrays are truly equal could be to use the np.array_equal() function
+#     assert np.array_equal(reaction_fp, manual_rxn_fp_with_padding)
 
-    lhs_cof_smiles = "NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1"
-    lhs_cof_object = featurizations.compound(lhs_cof_smiles)
-    lhs_cof_modred_fp = lhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    lhs_cof_modred_fp = np.nan_to_num(lhs_cof_modred_fp, copy=True)
-
-    product_smiles = "O=CC(O)C(O)C(O)C(O)CO"
-    product_object = featurizations.compound(product_smiles)
-    product_modred_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    product_modred_fp = np.nan_to_num(product_modred_fp, copy=True)
-
-    rhs_cof_smiles = "NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
-    rhs_cof_object = featurizations.compound(rhs_cof_smiles)
-    rhs_cof_modred_fp = rhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    rhs_cof_modred_fp = np.nan_to_num(rhs_cof_modred_fp, copy=True)
-
-    # All fingerprints should always be assembled in the form of "substrate + cofactor = product + cofactor"
-    manual_rxn_fp_without_padding = np.concatenate(
-        (substrate_modred_fp, lhs_cof_modred_fp, product_modred_fp, rhs_cof_modred_fp)
-    )
-
-    # another way of checking that both arrays are truly equal could be to use the np.array_equal() function
-    assert np.array_equal(reaction_fp, manual_rxn_fp_without_padding)
-
-def test_rxn_2_MAP4_with_padding_of_one():
-    # first, use the featurizations module to generate a MACCS reaction fingerprint
-    reaction_object = featurizations.reaction(AdH_rxn_str)
-    reaction_fp = reaction_object.rxn_2_fp_w_positioning(
-        fp_type="MAP4",
-        radius=2,
-        nBits=2048,
-        is_folded=True,
-        dim=2048,
-        max_species=3,  # since we are testing for a padding of two
-        cofactor_positioning="by_ascending_MW",
-        all_cofactors_wo_stereo=all_cofactors_wo_stereo)
-
-    # next, manually generate a modred reaction fingerprint
-    substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
-    substrate_object = featurizations.compound(substrate_smiles)
-    substrate_modred_fp = substrate_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    substrate_modred_fp = np.nan_to_num(
-        substrate_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    lhs_cof_smiles = "NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1"
-    lhs_cof_object = featurizations.compound(lhs_cof_smiles)
-    lhs_cof_modred_fp = lhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    lhs_cof_modred_fp = np.nan_to_num(
-        lhs_cof_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    product_smiles = "O=CC(O)C(O)C(O)C(O)CO"
-    product_object = featurizations.compound(product_smiles)
-    product_modred_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    product_modred_fp = np.nan_to_num(
-        product_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    rhs_cof_smiles = "NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
-    rhs_cof_object = featurizations.compound(rhs_cof_smiles)
-    rhs_cof_modred_fp = rhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    rhs_cof_modred_fp = np.nan_to_num(
-        rhs_cof_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    # All fingerprints should be in the form of "substrate + cofactor = product + cofactor"
-    manual_rxn_fp_with_padding = np.concatenate(
-        (
-            substrate_modred_fp,
-            lhs_cof_modred_fp,
-            np.zeros(len(substrate_modred_fp)),
-            product_modred_fp,
-            rhs_cof_modred_fp,
-            np.zeros(len(product_modred_fp)),
-        )
-    )
-
-    # finally, check if both methods actually yield the same fingerprint
-    for i in range(0, len(reaction_fp)):
-        element_frm_rxn_fp = int(reaction_fp[i])
-        element_frm_manually_constructed_fp = int(manual_rxn_fp_with_padding[i])
-        assert element_frm_rxn_fp == element_frm_manually_constructed_fp
-
-    # another way of checking that both arrays are truly equal could be to use the np.array_equal() function
-    assert np.array_equal(reaction_fp, manual_rxn_fp_with_padding)
-
-def test_rxn_2_MAP4_with_padding_of_two():
-    # first, use the featurizations module to generate a MACCS reaction fingerprint
-    reaction_object = featurizations.reaction(AdH_rxn_str)
-    reaction_fp = reaction_object.rxn_2_fp_w_positioning(
-        fp_type="MAP4",
-        radius=2,
-        nBits=2048,
-        is_folded=True,
-        dim=2048,
-        max_species=4,  # since we are testing for a padding of two
-        cofactor_positioning="by_ascending_MW",
-        all_cofactors_wo_stereo=all_cofactors_wo_stereo)
-
-    # next, manually generate a modred reaction fingerprint
-    substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
-    substrate_object = featurizations.compound(substrate_smiles)
-    substrate_modred_fp = substrate_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    substrate_modred_fp = np.nan_to_num(
-        substrate_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    lhs_cof_smiles = "NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1"
-    lhs_cof_object = featurizations.compound(lhs_cof_smiles)
-    lhs_cof_modred_fp = lhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    lhs_cof_modred_fp = np.nan_to_num(
-        lhs_cof_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    product_smiles = "O=CC(O)C(O)C(O)C(O)CO"
-    product_object = featurizations.compound(product_smiles)
-    product_modred_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    product_modred_fp = np.nan_to_num(
-        product_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    rhs_cof_smiles = "NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
-    rhs_cof_object = featurizations.compound(rhs_cof_smiles)
-    rhs_cof_modred_fp = rhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
-    rhs_cof_modred_fp = np.nan_to_num(
-        rhs_cof_modred_fp, copy=True
-    )  # remove nan values from modred descriptors
-
-    # All fingerprints should be in the form of "substrate + cofactor = product + cofactor"
-    manual_rxn_fp_with_padding = np.concatenate(
-        (
-            substrate_modred_fp,
-            lhs_cof_modred_fp,
-            np.zeros(len(substrate_modred_fp)),
-            np.zeros(len(substrate_modred_fp)),
-            product_modred_fp,
-            rhs_cof_modred_fp,
-            np.zeros(len(product_modred_fp)),
-            np.zeros(len(product_modred_fp)),
-        )
-    )
-
-    # finally, check if both methods actually yield the same fingerprint
-    for i in range(0, len(reaction_fp)):
-        element_frm_rxn_fp = int(reaction_fp[i])
-        element_frm_manually_constructed_fp = int(manual_rxn_fp_with_padding[i])
-        assert element_frm_rxn_fp == element_frm_manually_constructed_fp
-
-    # another way of checking that both arrays are truly equal could be to use the np.array_equal() function
-    assert np.array_equal(reaction_fp, manual_rxn_fp_with_padding)
+# def test_rxn_2_MAP4_with_padding_of_two():
+#     # first, use the featurizations module to generate a MACCS reaction fingerprint
+#     reaction_object = featurizations.reaction(AdH_rxn_str)
+#     reaction_fp = reaction_object.rxn_2_fp_w_positioning(
+#         fp_type="MAP4",
+#         radius=2,
+#         nBits=2048,
+#         is_folded=True,
+#         dim=2048,
+#         max_species=4,  # since we are testing for a padding of two
+#         cofactor_positioning="by_ascending_MW",
+#         all_cofactors_wo_stereo=all_cofactors_wo_stereo)
+#
+#     # next, manually generate a modred reaction fingerprint
+#     substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
+#     substrate_object = featurizations.compound(substrate_smiles)
+#     substrate_modred_fp = substrate_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     substrate_modred_fp = np.nan_to_num(
+#         substrate_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     lhs_cof_smiles = "NC(=O)c1ccc[n+](C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)c1"
+#     lhs_cof_object = featurizations.compound(lhs_cof_smiles)
+#     lhs_cof_modred_fp = lhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     lhs_cof_modred_fp = np.nan_to_num(
+#         lhs_cof_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     product_smiles = "O=CC(O)C(O)C(O)C(O)CO"
+#     product_object = featurizations.compound(product_smiles)
+#     product_modred_fp = product_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     product_modred_fp = np.nan_to_num(
+#         product_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     rhs_cof_smiles = "NC(=O)C1=CN(C2OC(COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)C(O)C2O)C=CC1"
+#     rhs_cof_object = featurizations.compound(rhs_cof_smiles)
+#     rhs_cof_modred_fp = rhs_cof_object._smiles_2_MAP4(is_folded=True, dim=2048)
+#     rhs_cof_modred_fp = np.nan_to_num(
+#         rhs_cof_modred_fp, copy=True
+#     )  # remove nan values from modred descriptors
+#
+#     # All fingerprints should be in the form of "substrate + cofactor = product + cofactor"
+#     manual_rxn_fp_with_padding = np.concatenate(
+#         (
+#             substrate_modred_fp,
+#             lhs_cof_modred_fp,
+#             np.zeros(len(substrate_modred_fp)),
+#             np.zeros(len(substrate_modred_fp)),
+#             product_modred_fp,
+#             rhs_cof_modred_fp,
+#             np.zeros(len(product_modred_fp)),
+#             np.zeros(len(product_modred_fp)),
+#         )
+#     )
+#
+#     # finally, check if both methods actually yield the same fingerprint
+#     for i in range(0, len(reaction_fp)):
+#         element_frm_rxn_fp = int(reaction_fp[i])
+#         element_frm_manually_constructed_fp = int(manual_rxn_fp_with_padding[i])
+#         assert element_frm_rxn_fp == element_frm_manually_constructed_fp
+#
+#     # another way of checking that both arrays are truly equal could be to use the np.array_equal() function
+#     assert np.array_equal(reaction_fp, manual_rxn_fp_with_padding)
 
 # Test featurizing an alcohol dehydrogenase reaction to MHFP4 fingerprints both with and without padding
 def test_rxn_2_MHFP4_without_padding():
@@ -1698,7 +1697,7 @@ def test_rxn_2_MHFP4_without_padding():
         all_cofactors_wo_stereo=all_cofactors_wo_stereo,
     )
 
-    # next, manually generate a MAP4 reaction fingerprint
+    # next, manually generate a MHFP reaction fingerprint
     substrate_smiles = "OCC(O)C(O)C(O)C(O)CO"
     substrate_object = featurizations.compound(substrate_smiles)
     substrate_modred_fp = substrate_object._smiles_2_MHFP(radius=2)
