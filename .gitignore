@@ -36,3 +36,7 @@ typescript/src/**/*.d.ts
 
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+
+build/
+*.egg-info/
+
