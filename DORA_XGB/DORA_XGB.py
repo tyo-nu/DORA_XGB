@@ -21,7 +21,7 @@ class feasibility_classifier:
         fp_type: str = 'ecfp4',
         nBits: int = 2048,
         model_type: str = 'main',
-        cofactors_filepath: str = dir_path + '../cofactors/expanded_cofactors_no_stereochem.tsv'):
+        cofactors_filepath: str = dir_path + 'cofactors/expanded_cofactors_no_stereochem.tsv'):
 
         """
         Initialize feasibility classifier
