@@ -110,14 +110,14 @@ class feasibility_classifier:
 
         # Select DORA-XGB model and its corresponding feasibility threshold based on user-inputs
         if self.model_type == 'main':
-            model_filepath = dir_path + f'../models/{self.model_type}/all_BKM_rxns_{self.fp_type}_XGBoost_{self.max_species}_{self.cofactor_positioning}.pkl'
-            threshold_filepath = dir_path + f'../models/{self.model_type}/all_BKM_rxns_{self.fp_type}_XGBoost_{self.max_species}_{self.cofactor_positioning}_feasibility_threshold.txt'
+            model_filepath = dir_path + f'models/{self.model_type}/all_BKM_rxns_{self.fp_type}_XGBoost_{self.max_species}_{self.cofactor_positioning}.pkl'
+            threshold_filepath = dir_path + f'models/{self.model_type}/all_BKM_rxns_{self.fp_type}_XGBoost_{self.max_species}_{self.cofactor_positioning}_feasibility_threshold.txt'
             self.DORA_XGB_model = pickle.load(open(model_filepath, 'rb'))
             self.DORA_XGB_threshold = np.loadtxt(threshold_filepath).item()
 
         if self.model_type == 'spare':
-            model_filepath = dir_path + f'../models/{self.model_type}/xgboost_{self.fp_type}_{self.nBits}_{self.max_species}_{self.cofactor_positioning}.pkl'
-            threshold_filepath = dir_path + f'./models/{self.model_type}/xgboost_{self.fp_type}_{self.nBits}_{self.max_species}_{self.cofactor_positioning}_feasibility_threshold.txt'
+            model_filepath = dir_path + f'models/{self.model_type}/xgboost_{self.fp_type}_{self.nBits}_{self.max_species}_{self.cofactor_positioning}.pkl'
+            threshold_filepath = dir_path + f'models/{self.model_type}/xgboost_{self.fp_type}_{self.nBits}_{self.max_species}_{self.cofactor_positioning}_feasibility_threshold.txt'
             self.DORA_XGB_model = pickle.load(open(model_filepath, 'rb'))
             self.DORA_XGB_threshold = np.loadtxt(threshold_filepath).item()
 

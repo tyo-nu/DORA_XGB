@@ -1,0 +1,9 @@
+# Include README and license files
+include README.md
+include LICENSE
+include requirements.txt
+
+# Include all files in the DORA_XGB/models/ and DORA_XGB/cofactors/ directories
+recursive-include DORA_XGB/models *
+recursive-include DORA_XGB/cofactors *
+

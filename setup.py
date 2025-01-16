@@ -8,7 +8,7 @@ def parse_requirements(filename):
 setup(
     name='DORA_XGB',
 
-    version='1.1',
+    version='1.7',
 
     description = "Gradient-booseted classifiers to predict the feasibility of enzymatic reactions",
                 
@@ -22,8 +22,10 @@ setup(
 
     package_dir = {},
 
-    package_data = {'feasibility_wrapper': ['models/*',
-                                            'cofactors/expanded_cofactors_no_stereochem.tsv']},
+    include_package_data = True,
+
+    package_data = {'DORA_XGB': ['models/*',
+                                 'cofactors/expanded_cofactors_no_stereochem.tsv']},
 
 classifiers=[
         "Intended Audience :: Developers",
