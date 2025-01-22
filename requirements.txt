@@ -5,6 +5,6 @@ mhfp
 xgboost==1.6.2
 rdkit
 mordred
-pandas>=1.5.0,<2.0.0
+pandas
 scikit-learn
 tmap==1.2.1
