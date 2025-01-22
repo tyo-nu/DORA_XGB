@@ -12,7 +12,7 @@ conda create -n DORA_XGB_env python=3.8
 pip install -e.
 ```
 #### 2. Install from the PyPI repository:
-The most convenient way to begin using our DORA-XGB models may be to directly install them python package index:
+The most convenient way to begin using our DORA-XGB models may be to directly install them from the python package index (PyPI):
 ```
 pip install DORA-XGB
 ```
