@@ -7,4 +7,3 @@ rdkit
 mordred
 pandas
 scikit-learn
-tmap==1.2.1
