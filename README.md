@@ -26,7 +26,7 @@ After building the docker image locally, spin up a container with an interactive
 
 `docker run -ti dora_xgb /bin/bash`
 
-In this interactive bash shell, the run_example script and be run simply using:
+In this interactive bash shell, the run_example script cnd be run simply using:
 
 `python run_example.py`
 
